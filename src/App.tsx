@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AgoraRTM from "agora-rtm-sdk";
 import "./app.css";
+import axios from "axios";
 
 // interface IOptions {
 //   userId?: string;
@@ -30,10 +31,20 @@ function App() {
   };
 
   const loginUser = async () => {
-    await client.login({
+    const loginOptions = {
       uid: options.userId,
-      token: options.token,
-    });
+      token: "",
+    };
+    axios
+      .get(
+        `http://localhost:8080/access_token?channel=test&uid=${options.userId}`
+      )
+      .then((res: any) => {
+        console.log(res);
+        loginOptions.token = res.data?.token || "";
+      });
+    console.log("LOGIN OPTIONS: ", loginOptions);
+    await client.login(loginOptions);
   };
 
   return (
